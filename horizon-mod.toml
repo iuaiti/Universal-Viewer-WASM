@@ -1,0 +1,9 @@
+id = "universal_viewer"
+name = "Universal Viewer"
+version = "0.1.18"
+description = "Map pictures on slot icons and in the tooltip; see inside shulker boxes and bundles by holding Shift; placed shulker boxes open in their own colour."
+authors = []
+license = "MIT"
+api = "0.2"
+side = "both"
+capabilities = ["registries"]

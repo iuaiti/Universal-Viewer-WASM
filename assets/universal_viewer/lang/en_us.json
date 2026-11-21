@@ -1,0 +1,11 @@
+{
+  "universal_viewer.setting.lock_mode": "Ctrl lock",
+  "universal_viewer.setting.lock_mode.hold": "Hold Ctrl",
+  "universal_viewer.setting.lock_mode.toggle": "Press Ctrl to toggle",
+  "universal_viewer.setting.lock_mode.tooltip": "How Ctrl locks a shulker box or bundle preview in place: while Ctrl is held, or from one press of Ctrl to the next.",
+  "universal_viewer.setting.tooltip_map_size": "Tooltip map size",
+  "universal_viewer.setting.tooltip_map_size.64": "64 px",
+  "universal_viewer.setting.tooltip_map_size.96": "96 px",
+  "universal_viewer.setting.tooltip_map_size.128": "128 px",
+  "universal_viewer.setting.tooltip_map_size.tooltip": "Size of the map picture in a map's tooltip. The frame scales with it."
+}

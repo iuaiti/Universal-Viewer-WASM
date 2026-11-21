@@ -1,0 +1,11 @@
+{
+  "universal_viewer.setting.lock_mode": "Kunci Ctrl",
+  "universal_viewer.setting.lock_mode.hold": "Tahan Ctrl",
+  "universal_viewer.setting.lock_mode.toggle": "Tekan Ctrl untuk ganti",
+  "universal_viewer.setting.lock_mode.tooltip": "Cara Ctrl mengunci tampilan isi shulker box atau bundle: selama Ctrl ditahan, atau dari satu tekanan Ctrl ke tekanan berikutnya.",
+  "universal_viewer.setting.tooltip_map_size": "Ukuran map di tooltip",
+  "universal_viewer.setting.tooltip_map_size.64": "64 px",
+  "universal_viewer.setting.tooltip_map_size.96": "96 px",
+  "universal_viewer.setting.tooltip_map_size.128": "128 px",
+  "universal_viewer.setting.tooltip_map_size.tooltip": "Ukuran gambar map di tooltip map; bingkainya ikut menyesuaikan."
+}
