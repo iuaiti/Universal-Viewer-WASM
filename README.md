@@ -93,7 +93,7 @@ Since Horizon WebAssembly mods do not support `[[native.mixin]]`, this mixin has
 
 ## Build (WebAssembly)
 
-Pinned to Horizon Nightly SDK **`f1bb66f`** (`f1bb66f353cf67f2aa4665293fc75c8d91186fc7`).
+Pinned to Horizon `api = "0.2"` SDK **`0b14f8a`** (`0b14f8acfd97fa2c750e42795249dcc981178ca4`).
 
 Requires Rust (`rustup`, Rust 1.95+) and `cargo-horizon-mod` for development and building.
 
