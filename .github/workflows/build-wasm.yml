@@ -7,49 +7,83 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
-      update_sdk:
-        description: "Run `cargo horizon-mod update` before building"
+      horizon_repo:
+        description: "Horizon source repository (owner/repo)"
         required: false
-        type: boolean
-        default: false
+        type: string
+        default: "rdbtCVS/horizon"
+      horizon_ref:
+        description: "Horizon commit SHA or branch to build against"
+        required: false
+        type: string
+        default: "f1bb66f353cf67f2aa4665293fc75c8d91186fc7"
 
 permissions:
   contents: write
+
+env:
+  HORIZON_REPO: ${{ inputs.horizon_repo || 'rdbtCVS/horizon' }}
+  HORIZON_REF: ${{ inputs.horizon_ref || 'f1bb66f353cf67f2aa4665293fc75c8d91186fc7' }}
 
 jobs:
   build-wasm:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout mod repository
         uses: actions/checkout@v4
+
+      - name: Checkout Horizon source backup
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.HORIZON_REPO }}
+          ref: ${{ env.HORIZON_REF }}
+          path: _horizon_src
+          fetch-depth: 1
+          submodules: false
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Cache Cargo & Horizon SDK
+      - name: Cache Cargo & cargo-horizon-mod
         uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/cargo-horizon-mod
+            ~/.cargo/bin/.cargo-horizon-mod-rev
             ~/.cargo/registry
             ~/.cargo/git
-            .horizon/sdk
-          key: ${{ runner.os }}-horizon-wasm-${{ hashFiles('Cargo.toml', 'Cargo.lock') }}
+          key: ${{ runner.os }}-horizon-tree-${{ env.HORIZON_REF }}-${{ hashFiles('_horizon_src/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-horizon-wasm-
+            ${{ runner.os }}-horizon-tree-${{ env.HORIZON_REF }}-
 
-      - name: Install cargo-horizon-mod
+      - name: Install cargo-horizon-mod from Horizon source
         run: |
-          if ! command -v cargo-horizon-mod >/dev/null 2>&1; then
-            cargo install --locked --git https://github.com/horizon-rust/horizon cargo-horizon-mod
+          if [ ! -x "$HOME/.cargo/bin/cargo-horizon-mod" ] || [ "$(cat "$HOME/.cargo/bin/.cargo-horizon-mod-rev" 2>/dev/null || true)" != "${HORIZON_REF}" ]; then
+            cargo install --locked --force --path _horizon_src/crates/cargo-horizon-mod
+            printf '%s' "${HORIZON_REF}" > "$HOME/.cargo/bin/.cargo-horizon-mod-rev"
           fi
 
-      - name: Update SDK pin (optional)
-        if: ${{ inputs.update_sdk == true }}
-        run: cargo horizon-mod update
-
-      - name: Build WASM .hmod
-        run: cargo horizon-mod build --wasm
+      - name: Stage mod inside Horizon game tree & build WASM .hmod
+        run: |
+          set -euo pipefail
+          STAGE="_horizon_src/_mod_build"
+          rm -rf "${STAGE}"
+          mkdir -p "${STAGE}"
+          cp horizon-mod.toml icon.png LICENSE README.md "${STAGE}/"
+          cp -r src assets "${STAGE}/"
+          printf '%s\n' \
+            '[package]' \
+            'name = "mod-universal_viewer"' \
+            'version = "0.1.0"' \
+            'edition = "2024"' \
+            '' \
+            '[dependencies]' \
+            'horizon-mod-api = { path = "../crates/horizon-mod-api" }' \
+            '' \
+            '[workspace]' > "${STAGE}/Cargo.toml"
+          (cd "${STAGE}" && cargo horizon-mod build --wasm)
+          mkdir -p target/horizon-mod
+          cp "${STAGE}/target/horizon-mod/universal_viewer.hmod" target/horizon-mod/universal_viewer.hmod
 
       - name: Check packaged .hmod
         run: cargo horizon-mod check target/horizon-mod/universal_viewer.hmod

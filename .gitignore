@@ -1,3 +1,4 @@
 /.horizon/
 /target/
 /mod.wasm
+/_horizon_src/
